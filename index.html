@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Primitive-Informed Sampling-Based MPC for Multi-Fingered Dexterous Manipulation">
+  <meta name="keywords" content="Model Predictive Control, Sampling-Based MPC, Dexterous Manipulation, Manipulation Primitives, In-Hand Rotation, Allegro Hand, MuJoCo, Robotics">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Primitive-Informed Sampling-Based MPC for Multi-Fingered Dexterous Manipulation</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Primitive-Informed Sampling-Based MPC for Multi-Fingered Dexterous Manipulation</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Anonymous submission</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <span class="link-block">
+                <a href="#"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <!-- TODO: add static/videos/teaser.mp4 (H.264, 16:9). The poster shows until then. -->
+      <video id="teaser" autoplay muted loop playsinline height="100%"
+             poster="./static/images/placeholder.svg">
+        <source src="./static/videos/teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        Low-dimensional manipulation primitives bias the sampling distribution of a sampling-based MPC, while
+        joint-level residuals adapt the motion to the current hand&ndash;object configuration. On a physical
+        Allegro hand this yields <b>100% success</b> (86/86) on continuous in-hand rotation without palm support,
+        where unstructured joint-space sampling never completes a single revolution, even with
+        <b>6&times; more samples</b>.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <!-- TODO: add clips to static/videos/ and one .item per clip
+             (source footage: ../Videos/IMG_1096_rotation.MOV, IMG_1105_grasping.MOV,
+              IMG_1115_reorient.MOV, IMG_1183_Arm+Hand.MOV) -->
+        <div class="item item-rotation">
+          <video poster="./static/images/placeholder.svg" id="rotation" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/rotation_40mm_hex.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-35mm">
+          <video poster="./static/images/placeholder.svg" id="hex35" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/rotation_35mm_hex.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-45mm">
+          <video poster="./static/images/placeholder.svg" id="hex45" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/rotation_45mm_hex.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-grasp">
+          <video poster="./static/images/placeholder.svg" id="grasp" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/grasping.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-reorient">
+          <video poster="./static/images/placeholder.svg" id="reorient" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/reorientation.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-armhand">
+          <video poster="./static/images/placeholder.svg" id="armhand" autoplay controls muted loop playsinline height="100%">
+            <source src="./static/videos/arm_hand_transport.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We present a primitive-informed sampling-based model predictive control (MPC) framework for
+            multi-fingered dexterous manipulation. Sampling-based MPC avoids complex gradient calculations
+            through contact dynamics, but its effectiveness depends strongly on the distribution of sampled
+            trajectories, due to the challenges in exploring the high-dimensional joint space.
+          </p>
+          <p>
+            Our framework biases sampling using low-dimensional manipulation primitives that encode coordinated
+            finger motions, while simultaneously optimizing joint-level residuals to adapt these motions to the
+            current hand&ndash;object configuration. Task-related rollout constraints reject infeasible
+            trajectories during forward simulation, improving the effective use of the sampling budget.
+          </p>
+          <p>
+            We evaluate the approach on a physical Allegro hand using a synchronized MuJoCo digital twin.
+            Ablations show that both the primitive and residual are necessary for reliable continuous in-hand
+            rotation, that increasing the sampling budget alone does not recover this coordination, and that
+            rollout constraints substantially improve success rate. A primitive extracted from a single object
+            remains effective across object sizes and under model mismatch, and the framework further supports
+            grasping, object reorientation, and coordinated arm&ndash;hand reach&ndash;grasp&ndash;transport,
+            using primitives extracted from both a simulation-trained policy and human hand-motion data.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <!-- TODO: replace VIDEO_ID with the YouTube id -->
+          <iframe src="https://www.youtube.com/embed/VIDEO_ID?rel=0&amp;showinfo=0"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <!-- Method overview. -->
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method</h2>
+        <div class="content has-text-justified">
+          <p>
+            The controller maintains a MuJoCo digital twin of the Franka arm, Allegro hand, and manipulated
+            object. Robot encoders and motion capture update the twin at about 100 Hz, so every batch of
+            candidate trajectories starts from the latest measured state, and commands are sent to the low-level
+            controllers at 333 Hz. At each update, the cross-entropy method (CEM) samples candidate control
+            trajectories represented by a small number of spline knots, rolls them out in MuJoCo, and refits the
+            sampling distribution to the lowest-cost elites. Only the leading portion of the optimized trajectory
+            is executed before replanning, yielding a receding-horizon feedback controller.
+          </p>
+          <p>
+            Directly sampling every joint command independently is inefficient because useful dexterous
+            behaviors require coordinated motion across multiple fingers. We therefore sample in a
+            <b>primitive&ndash;residual</b> latent space: a low-dimensional coordination basis extracted with PCA
+            from example trajectories, plus a full-dimensional joint-level residual. Task constraints checked at
+            every simulated step terminate infeasible rollouts early so they never enter the elite set.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <!-- TODO: export Fig. 1 to static/images/overview.png and point src at it (source: ../Figures/overview.png) -->
+          <img src="./static/images/placeholder.svg" alt="System overview">
+          <p class="is-size-6 has-text-grey">
+            System overview. A synchronized MuJoCo digital twin provides the state; CEM optimizes actions in the
+            primitive&ndash;residual latent space subject to rollout constraints; primitives are extracted offline
+            by PCA from a simulation-trained policy or from human hand-motion data (NinaPro).
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Method overview. -->
+
+    <div class="columns is-centered">
+
+      <!-- Primitive-residual parameterization. -->
+      <div class="column">
+        <div class="content">
+          <h3 class="title is-4">Primitive&ndash;Residual Parameterization</h3>
+          <p>
+            At each spline knot the latent command is
+            <b>&eta;<sub>k</sub> = [z<sub>k</sub>, &delta;q<sub>k</sub>]</b>, and the hand command is reconstructed
+            as <b>u<sub>h,k</sub> = q&#772; + &Phi;z<sub>k</sub> + &delta;q<sub>k</sub></b>, where q&#772; is the
+            mean posture of the extraction data, the columns of &Phi; are <i>d</i> coordinated motion primitives,
+            z<sub>k</sub> are their mixing coefficients, and &delta;q<sub>k</sub> is the joint-level residual.
+          </p>
+          <p>
+            <b>Fusing, not selecting.</b> The coefficients in z<sub>k</sub> are optimized jointly, so multiple
+            primitives contribute to the same knot. The primitive provides a structured low-dimensional direction
+            for sampling; the residual prevents the optimization from being restricted to the primitive subspace.
+          </p>
+          <p>
+            <b>Two-scale exploration.</b> To avoid premature collapse of the CEM distribution, half of the
+            candidates are sampled with an exploration standard-deviation floor and half with a smaller refinement
+            floor, defined separately for the primitive coefficients and the residuals.
+          </p>
+        </div>
+      </div>
+      <!--/ Primitive-residual parameterization. -->
+
+      <!-- Extraction + constraints. -->
+      <div class="column">
+        <div class="content">
+          <h3 class="title is-4">Primitive Extraction and Constrained Rollouts</h3>
+          <p>
+            <b>Primitive extraction.</b> Example joint trajectories exhibiting the desired behavior are temporally
+            aligned and mean-centered, and PCA is applied to their covariance. The smallest number of principal
+            components explaining at least 90% of the variance forms the basis &Phi;. The rotation primitive
+            (4 components) comes from a SAC policy trained in simulation; the grasping primitive (5 components)
+            comes from 25 subjects performing 20 grasps in the NinaPro human hand-motion database.
+          </p>
+          <p>
+            <b>Task-constrained rollout evaluation.</b> Constraints such as &ldquo;the object must not touch the
+            table&rdquo; are checked after every simulated transition. A violating candidate is terminated
+            immediately, assigned a large failure cost, and its rollout worker moves on to a new sample. This
+            keeps infeasible trajectories out of the elite set and directs compute toward candidates that can
+            contribute to the optimization.
+          </p>
+        </div>
+      </div>
+      <!--/ Extraction + constraints. -->
+    </div>
+
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Real-World Results</h2>
+
+        <!-- Setup. -->
+        <h3 class="title is-4">Experimental setup</h3>
+        <div class="content has-text-justified">
+          <p>
+            All experiments run on a physical 16-DoF Allegro hand mounted on a Franka arm, with object pose from
+            motion capture. The MPC uses a 0.5 s horizon with 6 spline knots and 10 elites per CEM update, and
+            rollouts are evaluated in parallel on a 192-thread workstation (about 38 ms per update at
+            N = 350 samples). We evaluate four tasks: continuous in-hand rotation (core ablations and
+            robustness), object reorientation (isolates the rollout constraint), grasping (human-derived
+            primitive), and coordinated arm&ndash;hand reach&ndash;grasp&ndash;transport. Unlike prior
+            sampling-based MPC demonstrations with the palm facing up, the hand holds the object without palm
+            support, so any sampling update that fails to find a grasp-maintaining motion results in a drop.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <!-- TODO: export Fig. 2 to static/images/setup.png (source: ../Figures/experiments.png) -->
+          <img src="./static/images/placeholder.svg" alt="Experimental setup" style="width: 75%;">
+          <p class="is-size-6 has-text-grey">
+            Experimental tasks: continuous in-hand rotation, object reorientation, grasping, and coordinated
+            arm&ndash;hand reach&ndash;grasp&ndash;transport.
+          </p>
+        </div>
+        <!--/ Setup. -->
+
+        <!-- Rollout budget. -->
+        <h3 class="title is-4">More samples do not replace the primitive</h3>
+        <div class="content has-text-justified">
+          <p>
+            We vary the rollout budget N &isin; {100, 350, 600} for the full method and for a <i>No primitive</i>
+            variant that samples directly in joint-command space, as in prior sampling-based MPC for dexterous
+            hands.
+          </p>
+          <ul>
+            <li><b>No primitive</b> completes zero rotations at every budget. Its maximum accumulated rotation
+              plateaus at about 120&ndash;150&deg;, the rotation achievable with the initial grasp. Going further
+              requires finger gaiting, which independently sampled joint motions rarely produce, so a six-fold
+              increase in samples does not recover the coordination.</li>
+            <li><b>Ours</b> reaches 46.2% success (6/13) at N = 100 and 100% (86/86) at N = 350.</li>
+            <li><b>Too many samples hurt.</b> At N = 600 the mean update time grows from 37.7 ms to 51.6 ms and
+              success falls to 85.3% (64/75): slower replanning lets sim-to-real discrepancies accumulate,
+              offsetting the benefit of extra samples. N = 350 is used for all subsequent hand-only experiments.</li>
+          </ul>
+        </div>
+        <div class="content has-text-centered">
+          <!-- TODO: export Fig. 3 to static/images/budget.png -->
+          <img src="./static/images/placeholder.svg" alt="Performance versus sampling budget" style="width: 75%;">
+          <p class="is-size-6 has-text-grey">
+            In-hand rotation performance versus sampling budget N. Top: rotation speed of successful rotations and
+            success ratio for Ours and No primitive. Bottom: maximum accumulated rotation per attempt for
+            No primitive. Mean MPC update time is shown below each N.
+          </p>
+        </div>
+        <!--/ Rollout budget. -->
+
+        <!-- Ablations. -->
+        <h3 class="title is-4">Ablations: primitive, residual, and constraint are all needed</h3>
+        <div class="content has-text-justified">
+          <p>
+            At N = 350 we remove each component in turn. <i>No primitive</i> is additionally swept over three
+            joint-space sampling scales (0.5, 1.0, 1.5 rad) to rule out a poorly chosen scale. <i>No residual</i>
+            restricts all motion to the primitive subspace. <i>No constraint</i> disables the object&ndash;table
+            contact constraint.
+          </p>
+          <ul>
+            <li><b>Both primitive and residual are necessary.</b> No residual achieves 0/10 and No primitive
+              achieves 0/30 across all sampling scales, versus 100% (86/86 over 10 three-minute trials) for the
+              full method. The primitive supplies coordinated structure; the residual supplies the local
+              flexibility to adapt it to the current hand&ndash;object configuration.</li>
+            <li><b>Constraints improve reliability, not speed.</b> Disabling the rollout constraint drops success
+              to 57.1% (72/126, p = 3.25&times;10<sup>-5</sup>), while the median speed of successful rotations is
+              unchanged (20.42&deg;/s without vs. 18.78&deg;/s with, p = 0.604).</li>
+          </ul>
+        </div>
+        <div class="content has-text-centered">
+          <!-- TODO: export Fig. 4 to static/images/ablation.png (source: ../plots/ablations.png) -->
+          <img src="./static/images/placeholder.svg" alt="Ablation results" style="width: 75%;">
+          <p class="is-size-6 has-text-grey">
+            In-hand rotation ablations. Successful-turn rotation speeds for Ours and No constraint, and success
+            ratios for these two conditions and the pooled No primitive / No residual ablations.
+          </p>
+        </div>
+        <!--/ Ablations. -->
+
+        <!-- Transfer across sizes + model mismatch. -->
+        <h3 class="title is-4">One primitive transfers across object sizes and model mismatch</h3>
+        <div class="content has-text-justified">
+          <p>
+            <b>Object size.</b> Using the primitive extracted from the 40 mm across-flats hexagonal object without
+            re-extraction, success remains 97.9% (93/95) on a 35 mm object and 98.4% (61/62) on a 45 mm object,
+            versus 100% (86/86) on the 40 mm object. Drop counts (2, 1, and 0) are not significantly different
+            (p = 0.34). Speed is unchanged for 35 mm and decreases from 18.78&deg;/s to 13.17&deg;/s for 45 mm
+            (p = 0.046).
+          </p>
+          <p>
+            <b>Model mismatch.</b> Perturbing either the friction coefficient or the object mass in the digital
+            twin by &plusmn;50% while leaving the physical task unchanged, the controller keeps rotating under all
+            four conditions with success between 80.9% and 100%. Underestimating friction by 50% slows rotation
+            to 13.03&deg;/s (p = 0.002); underestimating mass by 50% is the only condition that significantly
+            increases drops (18 over 30 minutes, p = 9.53&times;10<sup>-4</sup>).
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <!-- TODO: export Fig. 5 and Fig. 6 to static/images/transfer.png (sources: ../plots/object_size.png, ../plots/model_mismatch.png) -->
+          <img src="./static/images/placeholder.svg" alt="Transfer across object sizes and model mismatch" style="width: 75%;">
+          <p class="is-size-6 has-text-grey">
+            Left: rotation across 40, 35, and 45 mm objects using the 40 mm primitive. Right: rotation under
+            &plusmn;50% friction and mass mismatch in the MPC digital twin.
+          </p>
+        </div>
+        <!--/ Transfer across sizes + model mismatch. -->
+
+        <!-- Grasping. -->
+        <h3 class="title is-4">A human-motion primitive enables grasping</h3>
+        <div class="content has-text-justified">
+          <p>
+            The hand starts open above the 40 mm object resting on the table, and the objective encourages
+            lifting the object 10 cm while keeping its orientation. The five grasping primitives come from
+            NinaPro human hand-motion data, with human flexion angles mapped directly to the Allegro index,
+            middle, ring, and thumb flexion joints and the abduction&ndash;adduction joints driven only by the
+            residual. The full method succeeds in 9 of 10 trials (lift &ge; 5 cm), while No primitive fails in
+            all 10 (p = 1.19&times;10<sup>-4</sup>): without the primitive, sampled motions push or tilt the object
+            rather than producing coordinated finger closure.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <!-- TODO: export grasping figure to static/images/grasping.png (source: ../plots/grasping.png) -->
+          <img src="./static/images/placeholder.svg" alt="Grasping results" style="width: 75%;">
+          <p class="is-size-6 has-text-grey">
+            Grasping with a primitive extracted from human hand-motion data versus direct joint-space sampling.
+          </p>
+        </div>
+        <!--/ Grasping. -->
+
+        <!-- Reorientation. -->
+        <h3 class="title is-4">Object reorientation: constraints reduce drops</h3>
+        <div class="content has-text-justified">
+          <p>
+            A cyclic heading command traverses 60&deg; over 10 s, holds for 3 s, and reverses. This task does not
+            need finger gaiting, so direct joint-space sampling suffices and the effect of the rollout constraint
+            can be isolated. With the constraint, 8 of 10 trials complete the full sequence, versus 3 of 10
+            without; the remaining trials end in drops that occur earlier and more often when the constraint is
+            disabled. Tracking accuracy while the object is held is unchanged (median heading RMSE 7.87&deg; vs.
+            8.26&deg;, hold-period error 1.88&deg; vs. 1.72&deg;, both p = 0.993).
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <!-- TODO: export Fig. 7 to static/images/reorientation.png (source: ../plots/orientation.png) -->
+          <img src="./static/images/placeholder.svg" alt="Object reorientation results" style="width: 75%;">
+          <p class="is-size-6 has-text-grey">
+            Left: desired and measured heading for a representative constrained trial. Right: active duration and
+            outcome of each trial with and without the rollout constraint.
+          </p>
+        </div>
+        <!--/ Reorientation. -->
+
+        <!-- Arm-hand. -->
+        <h3 class="title is-4">Coordinated arm&ndash;hand reach&ndash;grasp&ndash;transport</h3>
+        <div class="content has-text-justified">
+          <p>
+            Each latent spline knot is augmented with a desired Cartesian end-effector pose for the Franka arm,
+            with orientations perturbed in axis&ndash;angle form and interpolated by shortest-path slerp. The cost
+            penalizes the object's world-frame pose error and its pose error relative to a desired object&ndash;wrist
+            configuration; the budget is raised to N = 500. Starting with the hand away from the object, the
+            controller establishes a grasp in 9 of 10 trials and transports the object to within 3 cm of the
+            target in 8 of 10. The reach, grasp, and transport sequence is never programmed: it emerges from
+            online optimization of the task objective. The supplementary video also shows a run in which the robot
+            first rotates the object non-prehensilely, then grasps and transports it.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <video id="arm-hand-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="75%"
+                 poster="./static/images/placeholder.svg">
+            <source src="./static/videos/arm_hand_transport.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <!--/ Arm-hand. -->
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Implementation Details</h2>
+        <div class="content has-text-justified">
+          <p>
+            Settings shared across experiments. <!-- TODO: add cost weights w_p, w_par, w_perp, w_W, w_EE and
+            SAC training details for the rotation primitive source policy. -->
+          </p>
+        </div>
+        <div class="table-container">
+          <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+              <tr><th>Parameter</th><th>Value</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Planning horizon</td><td>0.5 s, K = 6 spline knots</td></tr>
+              <tr><td>CEM elites N<sub>e</sub></td><td>10 per update</td></tr>
+              <tr><td>Rollout budget N</td><td>350 (hand-only tasks), 500 (arm&ndash;hand task)</td></tr>
+              <tr><td>MPC update time</td><td>~38 ms at N = 350 (AMD Threadripper PRO 7995WX, 192 threads)</td></tr>
+              <tr><td>State update / command rate</td><td>~100 Hz digital-twin sync, 333 Hz commands to Allegro</td></tr>
+              <tr><td>Residual std floors</td><td>&sigma;<sup>explore</sup> = 1.0 rad, &sigma;<sup>refine</sup> = 0.10 rad</td></tr>
+              <tr><td>Primitive-coefficient std floors</td><td>&sigma;<sup>explore</sup> = p<sup>max</sup> &minus; p<sup>min</sup>, &sigma;<sup>refine</sup> = 0.3 (p<sup>max</sup> &minus; p<sup>min</sup>)</td></tr>
+              <tr><td>Explained-variance threshold &gamma;</td><td>90% (4 rotation primitives, 5 grasping primitives)</td></tr>
+              <tr><td>Rotation primitive source</td><td>SAC policy trained in simulation on the 40 mm AF hexagon, no domain randomization</td></tr>
+              <tr><td>Grasping primitive source</td><td>NinaPro: 25 right-handed subjects, 20 grasp motions</td></tr>
+              <tr><td>Rollout constraint</td><td>Object&ndash;table contact terminates the rollout with a large failure cost</td></tr>
+              <tr><td>Rotation success</td><td>One full revolution without a drop; &psi;<sup>des</sup> kept one revolution ahead</td></tr>
+              <tr><td>Grasp success</td><td>Object lifted &ge; 5 cm from the table</td></tr>
+              <tr><td>Arm&ndash;hand success</td><td>Object within 3 cm of the desired position</td></tr>
+              <tr><td>Statistics</td><td>Two-sided exact Wilcoxon rank-sum permutation tests; two-sided Fisher exact tests for binary outcomes</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            Page template borrowed from <a href="https://nerfies.github.io">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
