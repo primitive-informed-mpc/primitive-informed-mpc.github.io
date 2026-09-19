@@ -258,3 +258,11 @@ body {
   border-color: #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
+
+/* Main supplementary video: full width of the teaser column, click to play. */
+#supp-video {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+  background: #000;
+}

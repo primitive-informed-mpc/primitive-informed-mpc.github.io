@@ -69,11 +69,10 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <div class="publication-video">
-        <iframe src="https://www.youtube.com/embed/5aCBecUxbkM?rel=0"
-                title="Supplementary video"
-                frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-      </div>
+      <!-- Main video: starts on click, no autoplay. -->
+      <video id="supp-video" controls playsinline preload="metadata">
+        <source src="./static/videos/SuppVideo_MPC_v3.mp4" type="video/mp4">
+      </video>
       <h2 class="subtitle has-text-centered">
         Low-dimensional manipulation primitives bias the sampling distribution of a sampling-based MPC, while
         joint-level residuals adapt the motion to the current hand&ndash;object configuration. On a physical
@@ -178,8 +177,7 @@
         <div class="content has-text-justified">
           <p>
             All experiments run on a physical 16-DoF Allegro hand mounted on a Franka arm, with object pose from
-            motion capture. Unless noted, the MPC uses a 0.5 s horizon, 6 spline knots, 10 elites, and
-            N = 350 rollouts (about 38 ms per update).
+            motion capture. Controller settings are listed under Implementation Details below.
           </p>
         </div>
         <div class="content has-text-centered">
@@ -195,11 +193,9 @@
         <h3 class="title is-4">In-hand rotation: No primitive vs. Ours</h3>
         <div class="content has-text-justified">
           <p>
-            Continuous rotation of a 40 mm hexagonal object held <b>without palm support</b>: any sampling
-            update that fails to find a grasp-maintaining motion results in a drop. <i>No primitive</i> samples
-            directly in joint-command space, as in prior sampling-based MPC for dexterous hands, and stalls at the
-            rotation achievable with the initial grasp. <i>Ours</i> rotates continuously through finger gaiting,
-            completing 86/86 rotations over 10 three-minute trials.
+            The object is held <b>without palm support</b>, so any update that fails to find a grasp-maintaining
+            motion drops it. Direct joint-space sampling stalls at the rotation reachable with the initial grasp,
+            while <i>Ours</i> rotates continuously through finger gaiting without a single drop.
           </p>
         </div>
         <div class="columns video-compare">
@@ -224,13 +220,10 @@
             <h3 class="title is-4">More samples do not replace the primitive</h3>
             <div class="content has-text-justified">
               <p>
-                We vary the rollout budget N &isin; {100, 350, 600} for <i>Ours</i> and a <i>No primitive</i>
-                variant. <i>No primitive</i> completes zero rotations at every budget; its maximum accumulated
-                rotation plateaus at about 120&ndash;150&deg;, the rotation achievable with the initial grasp,
-                because independently sampled joint motions rarely produce the finger gaiting needed to go further.
-                <i>Ours</i> reaches 46.2% (6/13) at N = 100 and 100% (86/86) at N = 350. At N = 600 the mean
-                update time grows from 37.7 ms to 51.6 ms and success drops to 85.3% (64/75), as slower replanning
-                lets sim-to-real discrepancies accumulate.
+                Without the primitive, a six-fold larger sampling budget still never completes a rotation, because
+                independently sampled joint motions rarely produce the coordinated regrasp that finger gaiting
+                requires. Beyond a moderate budget, extra samples even hurt <i>Ours</i>: slower replanning lets
+                sim-to-real discrepancies accumulate.
               </p>
             </div>
             <div class="content has-text-centered">
@@ -247,12 +240,10 @@
             <h3 class="title is-4">Ablations: primitive, residual, and constraint are all needed</h3>
             <div class="content has-text-justified">
               <p>
-                At N = 350 we remove each component in turn. <i>No residual</i> (0/10) and <i>No primitive</i>
-                (0/30 across three joint-space sampling scales) never complete a rotation, versus 100% (86/86)
-                for <i>Ours</i>: the primitive supplies coordinated structure and the residual the local
-                flexibility to adapt it. Disabling the rollout constraint drops success to 57.1% (72/126,
-                p = 3.25&times;10<sup>-5</sup>) while the median speed of successful rotations is unchanged
-                (20.42&deg;/s vs. 18.78&deg;/s, p = 0.604): constraints improve reliability, not speed.
+                Removing either the primitive or the residual eliminates all successful rotations: the primitive
+                supplies the coordinated structure and the residual the local flexibility to adapt it. Removing
+                the rollout constraint roughly halves the success ratio without changing the speed of the
+                rotations that do succeed, so constraints improve reliability, not speed.
               </p>
             </div>
             <div class="content has-text-centered">
@@ -272,16 +263,9 @@
         <h3 class="title is-4">One primitive transfers across object sizes and model mismatch</h3>
         <div class="content has-text-justified">
           <p>
-            <b>Object size.</b> The primitive extracted from the 40 mm object is used without re-extraction on
-            35 mm and 45 mm objects: success is 97.9% (93/95) and 98.4% (61/62), versus 100% (86/86) at 40 mm.
-            Drop counts (2, 1, and 0) are not significantly different (p = 0.34); speed is unchanged at 35 mm and
-            decreases from 18.78&deg;/s to 13.17&deg;/s at 45 mm (p = 0.046).
-          </p>
-          <p>
-            <b>Model mismatch.</b> Perturbing the friction coefficient or object mass in the digital twin by
-            &plusmn;50% keeps success between 80.9% and 100%. Underestimating friction slows rotation to
-            13.03&deg;/s (p = 0.002), and underestimating mass is the only condition that significantly increases
-            drops (18 over 30 minutes, p = 9.53&times;10<sup>-4</sup>).
+            The primitive extracted from the 40 mm object keeps rotating 35 mm and 45 mm objects with nearly
+            unchanged success and no re-extraction, and the controller also persists under &plusmn;50% errors in
+            the modeled friction and mass, where large errors only slow rotation or increase drops.
           </p>
         </div>
         <div class="columns video-compare">
@@ -316,11 +300,9 @@
         <h3 class="title is-4">A human-motion primitive enables grasping</h3>
         <div class="content has-text-justified">
           <p>
-            The hand starts open above the 40 mm object and the objective is to lift it 10 cm while keeping its
-            orientation. The five grasping primitives come from the NinaPro human hand-motion database
-            (25 subjects, 20 grasps). <i>Ours</i> succeeds in 9/10 trials (lift &ge; 5 cm); <i>No primitive</i>
-            fails in all 10 (p = 1.19&times;10<sup>-4</sup>), pushing or tilting the object instead of closing
-            the fingers in coordination.
+            With grasping primitives extracted from human hand-motion data, the hand lifts the object from an
+            open configuration in nearly every trial. Without them, sampled motions push or tilt the object
+            instead of closing the fingers in coordination, and no grasp succeeds.
           </p>
         </div>
         <div class="columns video-compare">
@@ -343,11 +325,9 @@
         <h3 class="title is-4">Object reorientation: constraints reduce drops</h3>
         <div class="content has-text-justified">
           <p>
-            A cyclic heading command traverses 60&deg; over 10 s, holds for 3 s, and reverses. The task needs no
-            finger gaiting, so joint-space sampling suffices and the effect of the rollout constraint can be
-            isolated. With the constraint, 8/10 trials complete the full sequence, versus 3/10 without; all other
-            trials end in drops, which occur earlier without the constraint. Tracking accuracy while the object is
-            held is unchanged (median heading RMSE 7.87&deg; vs. 8.26&deg;, p = 0.993).
+            Tracking a cyclic heading command needs no finger gaiting, which isolates the effect of the rollout
+            constraint. With it, most trials complete the full sequence; without it, most end in an early drop,
+            while tracking accuracy while the object is held is the same in both cases.
           </p>
         </div>
         <div class="columns video-compare">
@@ -370,12 +350,10 @@
         <h3 class="title is-4">Coordinated arm&ndash;hand reach&ndash;grasp&ndash;transport</h3>
         <div class="content has-text-justified">
           <p>
-            Each latent knot is augmented with a desired Cartesian end-effector pose for the Franka arm, and the
-            cost penalizes the object&rsquo;s world-frame pose error and its pose error relative to the wrist
-            (N = 500). Starting with the hand away from the object, the controller establishes a grasp in 9/10
-            trials and transports the object to within 3 cm of the target in 8/10. The reach, grasp, and transport
-            sequence is never programmed; it emerges from online optimization of the task objective. In the right
-            video, the robot first rotates the object non-prehensilely, then grasps and transports it.
+            Adding the desired arm pose to the latent action lets the same framework reach, grasp, and transport
+            the object to a target pose in most trials. This sequence is never programmed; it emerges from online
+            optimization of the task objective, and in the right video the robot even rotates the object
+            non-prehensilely before grasping it.
           </p>
         </div>
         <div class="columns video-compare">
