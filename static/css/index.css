@@ -241,3 +241,20 @@ body {
 .figure-pair img {
   width: 100%;
 }
+
+/* Alternate section tint so consecutive sections read as distinct blocks. */
+.section-alt {
+  background-color: #f4f6f9;
+}
+
+.section-alt .content img {
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.75rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.section-alt .video-compare video {
+  border-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
