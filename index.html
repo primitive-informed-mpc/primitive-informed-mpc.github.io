@@ -146,25 +146,17 @@
 
         <div class="content has-text-justified">
           <p>
-            The controller maintains a MuJoCo digital twin of the Franka arm, Allegro hand, and manipulated
-            object. Robot encoders and motion capture update the twin at approximately 100 Hz, so every batch of
-            candidate trajectories starts from the latest measured state, and commands are sent to the low-level
-            controllers at 333 Hz. At each update, the cross-entropy method (CEM) samples <i>N</i> candidate
-            control trajectories represented by <i>K</i> latent spline knots, rolls them out in MuJoCo, and refits
-            the sampling distribution to the <i>N<sub>e</sub></i> lowest-cost elites. The leading portion of the
-            optimized trajectory is executed while the next update is computed, yielding receding-horizon
-            control.
+            A MuJoCo digital twin of the arm, hand, and object is synchronized with the physical system at
+            about 100 Hz. At each update, the cross-entropy method samples candidate spline-parameterized
+            trajectories, rolls them out in MuJoCo, and refits the sampling distribution to the lowest-cost
+            elites; the leading portion of the result is executed while the next update is computed.
           </p>
           <p>
-            Directly sampling every joint command independently is inefficient because useful dexterous
-            behaviors require coordinated motion across multiple fingers. We therefore sample in a
-            <b>primitive&ndash;residual</b> latent space: each hand command is reconstructed as
-            <b>u = q&#772; + &Phi;z + &delta;q</b>, where the columns of &Phi; are a few coordinated motion
-            primitives extracted by PCA from example trajectories (a simulation-trained policy or human
-            hand-motion data), z are their mixing coefficients, and &delta;q is a full-dimensional joint-level
-            residual. This concentrates exploration along a behavior-informed subspace while retaining
-            smaller-scale joint-level adaptation. Task constraints checked after every simulated step terminate
-            infeasible rollouts early, so they never enter the elite set.
+            Instead of sampling every joint independently, hand commands are reconstructed as
+            <b>u = q&#772; + &Phi;z + &delta;q</b>: a few coordinated motion <b>primitives</b> &Phi;, extracted
+            by PCA from a simulation-trained policy or human hand-motion data, are mixed by coefficients z, and a
+            joint-level <b>residual</b> &delta;q adapts the motion to the current hand&ndash;object configuration.
+            Task <b>constraints</b> checked at every simulated step terminate infeasible rollouts early.
           </p>
         </div>
       </div>
