@@ -177,3 +177,49 @@ body {
 .navbar .icon {
   color: #363636;
 }
+
+/* Figure captions. */
+.figure-caption {
+  color: #7a7a7a;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+/* Side-by-side video comparisons. */
+.video-compare {
+  margin-top: 0.5rem;
+}
+
+.video-compare .column {
+  padding: 0.5rem;
+}
+
+.video-compare .compare-label {
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.4rem;
+  min-height: 1.5em;
+}
+
+.video-compare video {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #000;
+}
+
+.publication-video iframe {
+  border: 0;
+}
+
+/* Phone widths: captions read better left-aligned, and percent-width figures should fill the screen. */
+@media screen and (max-width: 768px) {
+  .figure-caption {
+    text-align: left !important;
+  }
+
+  .content img[style] {
+    width: 100% !important;
+  }
+}
