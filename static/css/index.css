@@ -223,3 +223,21 @@ body {
     width: 100% !important;
   }
 }
+
+/* Two result figures side by side; the ablation plot is wider, so align both to a shared image row. */
+.figure-pair {
+  margin-top: 0.5rem;
+}
+
+.figure-pair .column {
+  display: flex;
+  flex-direction: column;
+}
+
+.figure-pair .column > .content:last-child {
+  margin-top: auto;
+}
+
+.figure-pair img {
+  width: 100%;
+}

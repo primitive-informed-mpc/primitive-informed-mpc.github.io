@@ -218,52 +218,55 @@
         </div>
         <!--/ In-hand rotation comparison. -->
 
-        <!-- Rollout budget. -->
-        <h3 class="title is-4">More samples do not replace the primitive</h3>
-        <div class="content has-text-justified">
-          <p>
-            We vary the rollout budget N &isin; {100, 350, 600} for <i>Ours</i> and a <i>No primitive</i>
-            variant. <i>No primitive</i> completes zero rotations at every budget; its maximum accumulated
-            rotation plateaus at about 120&ndash;150&deg;, the rotation achievable with the initial grasp, because
-            independently sampled joint motions rarely produce the finger gaiting needed to go further.
-            <i>Ours</i> reaches 46.2% (6/13) at N = 100 and 100% (86/86) at N = 350. At N = 600 the mean update
-            time grows from 37.7 ms to 51.6 ms and success drops to 85.3% (64/75), as slower replanning lets
-            sim-to-real discrepancies accumulate.
-          </p>
+        <!-- Rollout budget + Ablations, side by side. -->
+        <div class="columns figure-pair">
+          <div class="column">
+            <h3 class="title is-4">More samples do not replace the primitive</h3>
+            <div class="content has-text-justified">
+              <p>
+                We vary the rollout budget N &isin; {100, 350, 600} for <i>Ours</i> and a <i>No primitive</i>
+                variant. <i>No primitive</i> completes zero rotations at every budget; its maximum accumulated
+                rotation plateaus at about 120&ndash;150&deg;, the rotation achievable with the initial grasp,
+                because independently sampled joint motions rarely produce the finger gaiting needed to go further.
+                <i>Ours</i> reaches 46.2% (6/13) at N = 100 and 100% (86/86) at N = 350. At N = 600 the mean
+                update time grows from 37.7 ms to 51.6 ms and success drops to 85.3% (64/75), as slower replanning
+                lets sim-to-real discrepancies accumulate.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img src="./static/images/sampling_sweep.png" alt="Performance versus sampling budget" loading="lazy">
+              <p class="figure-caption has-text-justified">
+                <b>In-hand rotation performance versus sampling budget N.</b> Top: rotation speed of successful
+                rotations (left axis) and success ratio (right axis) for <i>Ours</i> (circles) and
+                <i>No primitive</i> (squares). Bottom: maximum accumulated rotation per attempt for
+                <i>No primitive</i>. Mean MPC update time is shown below each N. Error bars denote &plusmn; SD.
+              </p>
+            </div>
+          </div>
+          <div class="column">
+            <h3 class="title is-4">Ablations: primitive, residual, and constraint are all needed</h3>
+            <div class="content has-text-justified">
+              <p>
+                At N = 350 we remove each component in turn. <i>No residual</i> (0/10) and <i>No primitive</i>
+                (0/30 across three joint-space sampling scales) never complete a rotation, versus 100% (86/86)
+                for <i>Ours</i>: the primitive supplies coordinated structure and the residual the local
+                flexibility to adapt it. Disabling the rollout constraint drops success to 57.1% (72/126,
+                p = 3.25&times;10<sup>-5</sup>) while the median speed of successful rotations is unchanged
+                (20.42&deg;/s vs. 18.78&deg;/s, p = 0.604): constraints improve reliability, not speed.
+              </p>
+            </div>
+            <div class="content has-text-centered">
+              <img src="./static/images/ablations.png" alt="Ablation results" loading="lazy">
+              <p class="figure-caption has-text-justified">
+                <b>In-hand rotation ablations.</b> Successful-turn rotation speeds are shown for <i>Ours</i> and
+                <i>No constraint</i>, with each point representing one full rotation. Success ratios are shown
+                for these two conditions and the pooled <i>No primitive</i> and <i>No residual</i> ablations. For
+                the first two conditions, each success-ratio data point is computed over one three-minute trial.
+              </p>
+            </div>
+          </div>
         </div>
-        <div class="content has-text-centered">
-          <img src="./static/images/sampling_sweep.png" alt="Performance versus sampling budget" style="width: 70%;" loading="lazy">
-          <p class="figure-caption has-text-justified">
-            <b>In-hand rotation performance versus sampling budget N.</b> Top: rotation speed of successful
-            rotations (left axis) and success ratio (right axis) for <i>Ours</i> (circles) and
-            <i>No primitive</i> (squares). Bottom: maximum accumulated rotation per attempt for
-            <i>No primitive</i>. Mean MPC update time is shown below each N. Error bars denote &plusmn; SD.
-          </p>
-        </div>
-        <!--/ Rollout budget. -->
-
-        <!-- Ablations. -->
-        <h3 class="title is-4">Ablations: primitive, residual, and constraint are all needed</h3>
-        <div class="content has-text-justified">
-          <p>
-            At N = 350 we remove each component in turn. <i>No residual</i> (0/10) and <i>No primitive</i>
-            (0/30 across three joint-space sampling scales) never complete a rotation, versus 100% (86/86) for
-            <i>Ours</i>: the primitive supplies coordinated structure and the residual the local flexibility to
-            adapt it. Disabling the rollout constraint drops success to 57.1% (72/126,
-            p = 3.25&times;10<sup>-5</sup>) while the median speed of successful rotations is unchanged
-            (20.42&deg;/s vs. 18.78&deg;/s, p = 0.604): constraints improve reliability, not speed.
-          </p>
-        </div>
-        <div class="content has-text-centered">
-          <img src="./static/images/ablations.png" alt="Ablation results" style="width: 85%;" loading="lazy">
-          <p class="figure-caption has-text-justified">
-            <b>In-hand rotation ablations.</b> Successful-turn rotation speeds are shown for <i>Ours</i> and
-            <i>No constraint</i>, with each point representing one full rotation. Success ratios are shown for
-            these two conditions and the pooled <i>No primitive</i> and <i>No residual</i> ablations. For the
-            first two conditions, each success-ratio data point is computed over one three-minute trial.
-          </p>
-        </div>
-        <!--/ Ablations. -->
+        <!--/ Rollout budget + Ablations. -->
 
         <!-- Transfer across sizes + model mismatch. -->
         <h3 class="title is-4">One primitive transfers across object sizes and model mismatch</h3>
